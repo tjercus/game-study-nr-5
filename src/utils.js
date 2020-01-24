@@ -1,3 +1,4 @@
+import { Maybe } from "ramda-fantasy";
 import uuidv4 from "uuid/v4";
 import {
   CANVAS_HEIGHT,
@@ -7,6 +8,30 @@ import {
   HERO_SIZE,
   MoveKeys
 } from "./constants";
+
+const Just = Maybe.Just;
+const Nothing = Maybe.Nothing;
+
+/**
+ * Constructs a new `Maybe` from a nullable type. If the value is `null` or `undefined`, returns `Nothing`, otherwise
+ * returns the value wrapped in a `Just`
+ * @param {*} nullable - possible nullable value
+ * @returns {Nothing|Just<A>}
+ */
+export const fromNullable = nullable =>
+  typeof nullable === "undefined" || nullable === null
+    ? Nothing()
+    : Just(nullable);
+
+/**
+ * Create a Point from a Movable
+ * @param {Unit} movable - is a 'movable'
+ * @returns {Point|Unit} - with x and y
+ */
+export const makePoint = movable => /**@type Point */ ({
+  x: movable.x,
+  y: movable.y
+});
 
 /**
  * If a point is beyond a border, set it to having coordinates on the border
@@ -96,7 +121,7 @@ export const correctUnitPosition = (
   collidables,
   modifierFn = unit => unit // TODO rename collisionHandler ?
 ) => {
-  if (isCollisions(collidables, { x: unit.x, y: unit.y }, unitSize * 1.5)) {
+  if (isCollisions(collidables, makePoint(unit), unitSize * 1.5)) {
     return modifierFn(unit);
   }
   return unit;
@@ -204,9 +229,7 @@ export const moveHero = (hero, collidables, nextPoint) => {
  * @returns {boolean} share?
  */
 export const isCollision = (rect1, rect2, rectSize) => {
-  if (
-    !hasValue(rect1) || !hasValue(rect2)
-  ) {
+  if (!hasValue(rect1) || !hasValue(rect2)) {
     return false;
   }
   const predY1 = rect1.y + rectSize <= rect2.y;
@@ -322,30 +345,30 @@ export const distance = (rect1, rect2) => {
  * @returns {string|boolean} direction or false if not seen
  */
 export const getDirBetween = (unit, hero) => {
-    if (unit.y > hero.y && unit.x === hero.x) {
-      return Directions.NORTH;
-    }
-    if (unit.y > hero.y && unit.x < hero.x) {
-      return Directions.NORTH_EAST;
-    }
-    if (unit.y < hero.y && unit.x === hero.x) {
-      return Directions.SOUTH;
-    }
-    if (unit.y < hero.y && unit.x < hero.x) {
-      return Directions.SOUTH_EAST;
-    }
-    if (unit.x > hero.x && unit.y === hero.y) {
-      return Directions.WEST;
-    }
-    if (unit.y < hero.y && unit.x > hero.x) {
-      return Directions.SOUTH_WEST;
-    }
-    if (unit.x < hero.x && unit.x === hero.x) {
-      return Directions.EAST;
-    }
-    if (unit.y > hero.y && unit.x > hero.x) {
-      return Directions.NORTH_WEST;
-    }
+  if (unit.y > hero.y && unit.x === hero.x) {
+    return Directions.NORTH;
+  }
+  if (unit.y > hero.y && unit.x < hero.x) {
+    return Directions.NORTH_EAST;
+  }
+  if (unit.y < hero.y && unit.x === hero.x) {
+    return Directions.SOUTH;
+  }
+  if (unit.y < hero.y && unit.x < hero.x) {
+    return Directions.SOUTH_EAST;
+  }
+  if (unit.x > hero.x && unit.y === hero.y) {
+    return Directions.WEST;
+  }
+  if (unit.y < hero.y && unit.x > hero.x) {
+    return Directions.SOUTH_WEST;
+  }
+  if (unit.x < hero.x && unit.x === hero.x) {
+    return Directions.EAST;
+  }
+  if (unit.y > hero.y && unit.x > hero.x) {
+    return Directions.NORTH_WEST;
+  }
 };
 
 export const isShootKey = keyCode => keyCode > 40;
@@ -409,7 +432,10 @@ export const makeUShape = (point, size) => {
   const points = [];
   // draw line down from startpoint // TODO use map
   points.push(
-    ...makeVerticalLinePoints(point, { x: point.x, y: point.y + size })
+    ...makeVerticalLinePoints(
+      point,
+      /** @type Point */ { x: point.x, y: point.y + size }
+    )
   );
   // draw line left to right from lower left point
   // draw line right from lower right point
@@ -425,4 +451,5 @@ export const makeUShape = (point, size) => {
 export const hasValue = value => typeof value !== "undefined" && value !== null;
 
 // TODO distance can be memoized
-export const seesHero = (hero, snipe) => hasValue(hero) && hasValue(snipe) ? distance(snipe, hero) < 200 : false;
+export const seesHero = (hero, snipe) =>
+  hasValue(hero) && hasValue(snipe) ? distance(snipe, hero) < 200 : false;

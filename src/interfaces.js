@@ -6,23 +6,28 @@
 /**
  * TODO perhaps name 'Movable'
  * @interface Unit
+ * @inheritDoc Point
  * @augments Point
  * @property {string} dir - direction
+ * @property {number} id
  */
 
 /**
  * @interface Snipe
+ * @inheritDoc Point
  * @augments Unit
  * @property {number} movementStyle
  */
 
 /**
  * @interface Hero
+ * @inheritDoc Point
  * @augments Unit
  */
 
 /**
  * @interface Bullet
+ * @inheritDoc Point
  * @augments Unit
  */
 

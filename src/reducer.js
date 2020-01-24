@@ -6,14 +6,14 @@ import {
   makeBullet,
   isCollisions,
   getDirBetween,
-  makeLinePoints,
   createOppositeDir,
-  makeUShape,
-  hasValue, distance, seesHero
+  hasValue,
+  distance,
+  seesHero,
+  makePoint,
+  fromNullable
 } from "./utils";
 import {
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
   DIRECTION_LIMIT,
   PX_PER_MOVE,
   SNIPE_SIZE,
@@ -25,8 +25,10 @@ import {
   HERO_SIZE,
   CHANGE_SETTING_CMD,
   CREATE_WALLS_CMD,
-  SNIPE_SHOOT_INTERVAL, MovementStyles
+  SNIPE_SHOOT_INTERVAL,
+  MovementStyles
 } from "./constants";
+import { onCreateWalls } from "./walls";
 
 /**
  * makeNextState is what is commonly known a 'reducer', but I don't like the word.
@@ -41,7 +43,7 @@ export const makeNextState = (state, action) => {
       if (hasValue(bullet)) {
         let nextPoint = createNextPoint(
           bullet.dir,
-          /** @type Point */ { x: bullet.x, y: bullet.y },
+          makePoint(bullet),
           PX_PER_MOVE
         );
         return correctUnitPosition(
@@ -78,23 +80,32 @@ export const makeNextState = (state, action) => {
   if (MOVE_SNIPES_CMD === action.type) {
     const updatedSnipes = state.snipes.map(
       /** @type Snipe */ snipe => {
+        // fromNullable(snipe).map(snipe => hasValue(snipe) ? console.log("snipe is", snipe.id) : console.log("snipe is null"));
+
         if (hasValue(snipe)) {
+          // TODO a snipe should remember how long it has been moving in the same dir
           if (state.nrOfMoves % DIRECTION_LIMIT === 0) {
             snipe.dir = createRandomDir();
           }
           // check distance with snipe and decide on next direction based on movement type
-          console.log("state.hero", state.hero);
           if (seesHero(state.hero, snipe)) {
             if (snipe.movementStyle === MovementStyles.AGGRESSIVE) {
               snipe.dir = getDirBetween(snipe, state.hero); // towards Hero
+              if (distance(snipe, state.hero) < 15) {
+                // TODO this causes a bounce when snipe is moving away an sees hero and moves away again and sees hero
+                snipe.dir = createOppositeDir(snipe.dir, makePoint(snipe));
+              }
             }
 
             if (snipe.movementStyle === MovementStyles.EVASIVE) {
-              snipe.dir = createOppositeDir(getDirBetween(snipe, state.hero), /** @type Point */ {x: snipe.x, y: snipe.y} );
+              snipe.dir = createOppositeDir(
+                getDirBetween(snipe, state.hero),
+                makePoint(snipe)
+              );
             }
           }
 
-          let prevPoint = /** @type Point */ { x: snipe.x, y: snipe.y };
+          let prevPoint = makePoint(snipe);
           let nextPoint = createNextPoint(snipe.dir, prevPoint, PX_PER_MOVE);
 
           return /** @type Snipe */ {
@@ -142,11 +153,9 @@ export const makeNextState = (state, action) => {
     return { ...state, snipes: updatedSnipes, bullets: updatedBullets };
   }
   if (MOVE_HERO_CMD === action.type) {
-    const prevPoint = hasValue(state.hero)
-      ? { x: state.hero.x, y: state.hero.y }
-      : null;
+    const prevPoint = hasValue(state.hero) ? makePoint(state.hero) : null;
     const nextPoint = createNextPoint(action.dir, prevPoint, PX_PER_MOVE);
-    // console.log("moveHero", prevPoint, nextPoint);
+    console.log("moveHero", action.dir, prevPoint, nextPoint);
     const updatedHero = moveHero(
       state.hero,
       [...state.wallPoints, ...state.snipes],
@@ -164,44 +173,7 @@ export const makeNextState = (state, action) => {
     return { ...state, settings: updatedSettings };
   }
   if (CREATE_WALLS_CMD === action.type) {
-    const wall0 = { x1: 0, y1: 0, x2: CANVAS_WIDTH, y2: 0 };
-    const wall1 = { x1: 0, y1: 0, x2: 0, y2: CANVAS_HEIGHT };
-    const wall2 = {
-      x1: 0,
-      y1: CANVAS_HEIGHT,
-      x2: CANVAS_WIDTH,
-      y2: CANVAS_HEIGHT
-    };
-    const wall3 = {
-      x1: CANVAS_WIDTH,
-      y1: 0,
-      x2: CANVAS_WIDTH,
-      y2: CANVAS_HEIGHT
-    };
-
-    const wall4 = { x1: 0, y1: 100, x2: 500, y2: 100 };
-    const wall5 = { x1: 200, y1: 100, x2: 200, y2: 500 };
-    const wall6 = { x1: 500, y1: 700, x2: 700, y2: 700 };
-    const wall7 = { x1: 100, y1: 700, x2: 400, y2: 700 };
-
-    const updatedWalls = [
-      wall0,
-      wall1,
-      wall2,
-      wall3,
-      wall4,
-      wall5,
-      wall6,
-      wall7
-    ];
-
-    const freshWallPoints = [];
-    updatedWalls.forEach(wall => freshWallPoints.push(...makeLinePoints(wall)));
-    console.log("freshWallPoints #1 ", freshWallPoints.length);
-    freshWallPoints.push(...makeUShape(/** @type Point */ { x: 500, y: 500 }, 50));
-    console.log("freshWallPoints #2 ", freshWallPoints.length);
-
-    return { ...state, walls: updatedWalls, wallPoints: freshWallPoints };
+    return onCreateWalls(state);
   }
   return state;
 };
