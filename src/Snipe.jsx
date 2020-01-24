@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { SNIPE_SIZE } from "./constants";
+import {SNIPE_SIZE, snipeShape} from "./constants";
 import { hasValue } from "./utils";
 
 // TODO example triangle shape
@@ -14,7 +14,7 @@ const Snipe = props => {
         y={props.snipe.y - SNIPE_SIZE / 2}
         width={SNIPE_SIZE}
         height={SNIPE_SIZE}
-        stroke="green"
+        stroke={props.snipe.movementStyle === 0 ? "red" : "green"}
         fill="green"
         strokeWidth={SNIPE_SIZE}
       />
@@ -24,12 +24,7 @@ const Snipe = props => {
 };
 
 Snipe.propTypes = {
-  snipe: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-    dir: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired.isRequired
-  }).isRequired
+  snipe: PropTypes.shape(snipeShape).isRequired
 };
 
 export default Snipe;

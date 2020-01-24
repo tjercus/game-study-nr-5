@@ -2,10 +2,11 @@
 ## Game study nr 5: improved snipe behaviour ##
 
 (this version builds on (a copy of) 'game study nr 4')
+ - Snipes have different colours (movement type based)
+ - Snipes react to Hero based on their movement type
  - Refactorings to use a more functional style of programming
  - TODO Snipes learn and remember their environment
  - TODO Software 'sensors' for better seeing
- - TODO Snipes have different colours (personality based?)
  - TODO Snipes pause moving before they shoot 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

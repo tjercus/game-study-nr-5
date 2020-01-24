@@ -205,10 +205,7 @@ export const moveHero = (hero, collidables, nextPoint) => {
  */
 export const isCollision = (rect1, rect2, rectSize) => {
   if (
-    rect1 === null ||
-    rect2 === null ||
-    typeof rect1 === "undefined" ||
-    typeof rect2 === "undefined"
+    !hasValue(rect1) || !hasValue(rect2)
   ) {
     return false;
   }
@@ -325,7 +322,6 @@ export const distance = (rect1, rect2) => {
  * @returns {string|boolean} direction or false if not seen
  */
 export const getDirBetween = (unit, hero) => {
-  if (unit && hero && distance(unit, hero) < 200) {
     if (unit.y > hero.y && unit.x === hero.x) {
       return Directions.NORTH;
     }
@@ -350,8 +346,6 @@ export const getDirBetween = (unit, hero) => {
     if (unit.y > hero.y && unit.x > hero.x) {
       return Directions.NORTH_WEST;
     }
-  }
-  return false;
 };
 
 export const isShootKey = keyCode => keyCode > 40;
@@ -429,3 +423,6 @@ export const makeUShape = (point, size) => {
  * @return {boolean|boolean}
  */
 export const hasValue = value => typeof value !== "undefined" && value !== null;
+
+// TODO distance can be memoized
+export const seesHero = (hero, snipe) => hasValue(hero) && hasValue(snipe) ? distance(snipe, hero) < 200 : false;

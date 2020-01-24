@@ -13,6 +13,7 @@
 /**
  * @interface Snipe
  * @augments Unit
+ * @property {number} movementStyle
  */
 
 /**

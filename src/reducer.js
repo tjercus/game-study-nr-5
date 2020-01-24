@@ -9,7 +9,7 @@ import {
   makeLinePoints,
   createOppositeDir,
   makeUShape,
-  hasValue
+  hasValue, distance, seesHero
 } from "./utils";
 import {
   CANVAS_HEIGHT,
@@ -25,7 +25,7 @@ import {
   HERO_SIZE,
   CHANGE_SETTING_CMD,
   CREATE_WALLS_CMD,
-  SNIPE_SHOOT_INTERVAL
+  SNIPE_SHOOT_INTERVAL, MovementStyles
 } from "./constants";
 
 /**
@@ -53,7 +53,7 @@ export const makeNextState = (state, action) => {
           }
         );
       }
-      return [];
+      // return [];
     });
     const updatedHero =
       state.hero === null ||
@@ -66,7 +66,7 @@ export const makeNextState = (state, action) => {
           return snipe;
         }
       }
-      return [];
+      // return [];
     });
     return {
       ...state,
@@ -82,6 +82,18 @@ export const makeNextState = (state, action) => {
           if (state.nrOfMoves % DIRECTION_LIMIT === 0) {
             snipe.dir = createRandomDir();
           }
+          // check distance with snipe and decide on next direction based on movement type
+          console.log("state.hero", state.hero);
+          if (seesHero(state.hero, snipe)) {
+            if (snipe.movementStyle === MovementStyles.AGGRESSIVE) {
+              snipe.dir = getDirBetween(snipe, state.hero); // towards Hero
+            }
+
+            if (snipe.movementStyle === MovementStyles.EVASIVE) {
+              snipe.dir = createOppositeDir(getDirBetween(snipe, state.hero), /** @type Point */ {x: snipe.x, y: snipe.y} );
+            }
+          }
+
           let prevPoint = /** @type Point */ { x: snipe.x, y: snipe.y };
           let nextPoint = createNextPoint(snipe.dir, prevPoint, PX_PER_MOVE);
 
@@ -108,7 +120,7 @@ export const makeNextState = (state, action) => {
             )
           };
         }
-        return [];
+        // return [];
       }
     );
     const updatedBullets = /** @type Array<Unit> */ [...state.bullets];
@@ -116,12 +128,14 @@ export const makeNextState = (state, action) => {
     if (state.settings.snipesMayShoot) {
       state.snipes.map(_snipe => {
         if (state.nrOfMoves % SNIPE_SHOOT_INTERVAL === 0) {
-          let dir = getDirBetween(_snipe, state.hero);
-          if (dir) {
-            updatedBullets.push(makeBullet(_snipe, HERO_SIZE, dir));
+          if (_snipe && state.hero && distance(_snipe, state.hero) < 200) {
+            let dir = getDirBetween(_snipe, state.hero);
+            if (dir) {
+              updatedBullets.push(makeBullet(_snipe, HERO_SIZE, dir));
+            }
           }
         }
-        return [];
+        // return [];
       });
     }
     state.nrOfMoves++;
@@ -184,7 +198,7 @@ export const makeNextState = (state, action) => {
     const freshWallPoints = [];
     updatedWalls.forEach(wall => freshWallPoints.push(...makeLinePoints(wall)));
     console.log("freshWallPoints #1 ", freshWallPoints.length);
-    freshWallPoints.push(...makeUShape({ x: 500, y: 500 }, 50));
+    freshWallPoints.push(...makeUShape(/** @type Point */ { x: 500, y: 500 }, 50));
     console.log("freshWallPoints #2 ", freshWallPoints.length);
 
     return { ...state, walls: updatedWalls, wallPoints: freshWallPoints };

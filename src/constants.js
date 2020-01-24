@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export const Directions = {
   NORTH: "north",
   NORTH_EAST: "north_east",
@@ -67,3 +69,17 @@ export const HERO_SHOOT_CMD = "HERO_SHOOT_CMD";
 export const MOVE_BULLETS_CMD = "MOVE_BULLETS_CMD";
 export const CHANGE_SETTING_CMD = "CHANGE_SETTING_CMD";
 export const CREATE_WALLS_CMD = "CREATE_WALLS_CMD";
+
+export const MovementStyles = {
+  AGGRESSIVE: 0,
+  EVASIVE: 1,
+  RANDOM: 2,
+};
+
+export const snipeShape = {
+  dir: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  movementStyle: PropTypes.number.isRequired,
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+};
