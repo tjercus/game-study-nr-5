@@ -5,7 +5,7 @@ import Snipe from "./Snipe";
 import Hero from "./Hero";
 import Bullet from "./Bullet";
 
-import {CANVAS_HEIGHT, snipeShape} from "./constants";
+import { CANVAS_HEIGHT, snipeShape } from "./constants";
 import Wall from "./Wall";
 import { hasValue } from "./utils";
 
@@ -47,9 +47,7 @@ Canvas.propTypes = {
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired
   }),
-  snipes: PropTypes.arrayOf(
-    PropTypes.shape(snipeShape)
-  ).isRequired,
+  snipes: PropTypes.arrayOf(PropTypes.shape(snipeShape)).isRequired,
   walls: PropTypes.arrayOf(
     PropTypes.shape({
       x1: PropTypes.number.isRequired,

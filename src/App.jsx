@@ -13,9 +13,10 @@ import {
   HERO_SHOOT_CMD,
   MOVE_BULLETS_CMD,
   CREATE_WALLS_CMD,
-  CHANGE_SETTING_CMD, MovementStyles
+  CHANGE_SETTING_CMD,
+  MovementStyles
 } from "./constants";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  *
@@ -31,21 +32,33 @@ const defaultState = {
   nrOfMoves: 0,
   settings: { ricochet: false, snipesMayShoot: false },
   snipes: [
-    { dir: Directions.SOUTH, id: uuidv4(), movementStyle: MovementStyles.AGGRESSIVE, x: 110, y: 110},
-    { dir: Directions.NORTH, id: uuidv4(), movementStyle: MovementStyles.AGGRESSIVE, x: 220, y: 220},
+    {
+      dir: Directions.SOUTH,
+      id: uuidv4(),
+      movementStyle: MovementStyles.AGGRESSIVE,
+      x: 110,
+      y: 110
+    },
+    {
+      dir: Directions.NORTH,
+      id: uuidv4(),
+      movementStyle: MovementStyles.AGGRESSIVE,
+      x: 220,
+      y: 220
+    },
     {
       dir: Directions.EAST,
       id: uuidv4(),
       movementStyle: MovementStyles.EVASIVE,
       x: CANVAS_WIDTH - 120,
-      y: CANVAS_WIDTH - 120,
+      y: CANVAS_WIDTH - 120
     },
     {
       dir: Directions.WEST,
       id: uuidv4(),
       movementStyle: MovementStyles.EVASIVE,
       x: CANVAS_WIDTH - 220,
-      y: CANVAS_WIDTH - 220,
+      y: CANVAS_WIDTH - 220
     }
   ],
   walls: [], // for svg painting

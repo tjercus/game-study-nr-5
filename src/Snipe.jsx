@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {SNIPE_SIZE, snipeShape} from "./constants";
+import { SNIPE_SIZE, snipeShape } from "./constants";
 import { hasValue } from "./utils";
 
 // TODO example triangle shape

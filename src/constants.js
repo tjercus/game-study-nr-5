@@ -73,7 +73,7 @@ export const CREATE_WALLS_CMD = "CREATE_WALLS_CMD";
 export const MovementStyles = {
   AGGRESSIVE: 0,
   EVASIVE: 1,
-  RANDOM: 2,
+  RANDOM: 2
 };
 
 export const snipeShape = {
@@ -81,5 +81,5 @@ export const snipeShape = {
   id: PropTypes.string.isRequired,
   movementStyle: PropTypes.number.isRequired,
   x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired
 };

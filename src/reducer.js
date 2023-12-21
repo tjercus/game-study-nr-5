@@ -63,10 +63,11 @@ export const makeNextState = (state, action) => {
         ? null
         : state.hero;
     const updatedSnipes = state.snipes.map(snipe => {
-      if (hasValue(snipe)) {
-        if (!isCollisions(state.bullets, snipe, SNIPE_SIZE * 2.5)) {
-          return snipe;
-        }
+      if (
+        hasValue(snipe) &&
+        !isCollisions(state.bullets, snipe, SNIPE_SIZE * 2.5)
+      ) {
+        return snipe;
       }
       // return [];
     });
